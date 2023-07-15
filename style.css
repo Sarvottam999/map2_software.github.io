@@ -1,0 +1,59 @@
+#map {
+    height: 700px;
+    width: 100%;
+    /* margin: 15; */
+
+}
+
+#product-details {
+    display: none;
+    /* Hide product details by default */
+    margin-top: 10px;
+    /* Add margin for spacing */
+}
+
+#sidePanel {
+    background-color: rgb(156, 209, 255);
+}
+
+
+/* ==============  style for buttons -================ */
+.addButton,
+.removeButton,
+.drawLineButton,
+.closeButton,
+.deleteButton,
+.printButton {
+    background-color: white;
+    transition: background-color 0.3s ease;
+}
+
+.drawLineButton.clicked {
+    background-color: blue;
+    color: white;
+}
+
+
+
+/* ==============  style for coordinates -================ */
+#coordinatesContainer {
+    padding: 8px;
+
+    background-color: aliceblue;
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    z-index: 1000;
+    /* Set a higher z-index value */
+}
+
+/*  =========  size of imput ============ */
+.short-input {
+    width: 150px;
+    /* Adjust the width as needed */
+}
+
+.for-header {
+display: flex;
+justify-content: space-between;
+}
