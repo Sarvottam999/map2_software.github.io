@@ -1,0 +1,251 @@
+ <!DOCTYPE html>
+<html>
+
+<head>
+
+    <!-- boostrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"
+        integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS"
+        crossorigin="anonymous"></script>
+
+<!-- ---- leaflet ---- -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+        integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+        integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+
+    <!--  turf -->
+    <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+
+
+    <!-- google icon-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<!-- print -->
+<script src="./lib/leaflet.browser.print.min.js"></script>
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easyprint@2.1.9/libs/leaflet.min.css"> -->
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-easyprint/2.2.2/easyprint.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-easyprint/2.2.2/easyprint.js"></script> -->
+
+
+    <link rel="stylesheet" href="./style.css">
+
+
+</head>
+
+<body>
+    <!-- <div id="map"></div> -->
+
+    <nav class="navbar bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand">Map</a>
+            <form class="d-flex" role="search">
+                <input class="form-control me-2" id="search-input" type="search"
+                    placeholder="Search for a place or enter coordinates" aria-label="Search">
+                <button id="search-button" class="btn   btn-success" type="submit">Search</button>
+            </form>
+        </div>
+    </nav>
+    <div class="container">
+
+        <div class="container-fluid  p-3">
+            <div class="row  text-center">
+                <div class="col-1 p-3  justify-content-start" id="sidePanel">
+                    <!-- <button id="addButton" class="btn addButton mb-2" onclick=""><i class="material-icons">add
+                        </i></button>
+                    <button id="removeButton" class="btn removeButton mb-2" onclick=""><i class="material-icons">remove
+                        </i></button> -->
+                    <button id="drawLineButton" class="btn drawLineButton mb-2" onclick="toggleButtonColor()"><i
+                            class="material-icons"> timeline</i></button>
+                    <button id="closeButton" class="btn closeButton mb-2" onclick=""><i class="material-icons">close
+                        </i></button>
+                    <button id="deleteButton" class="btn deleteButton mb-2" onclick=""><i class="material-icons">delete
+                        </i></button>
+                    <!-- <button id="printButton" class="btn printButton mb-2" onclick=""><i class="material-icons">
+                            print</i></button> -->
+
+                </div>
+                <div class="col-11 bg-warning p-3">
+                    <div id="map" style="position: relative;">
+                        <div id="coordinatesContainer">
+                            Latitude: <span id="latitude"></span><br>
+                            Longitude: <span id="longitude"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-2" id="product-details">
+                <div class="card-header for-header">
+                    <h5 class="card-title">Card Title</h5>
+                    <button type="button" onclick="showProductDetails()" class="btn-close" aria-label="Close"></button>
+
+                </div>
+                <div class="card-body">
+
+                    <div class="row p-3 ">
+                        <div class="col">
+                            <!-- //=================================     start   ================================= -->
+                            <div class="row justify-content-evenly ">
+
+                                <div class="col-6">
+                                    <div class="row justify-content-start ">
+                                        <div class="col-3 "> <label for="startLatInput"
+                                                class="col-form-label mb-2">Start
+                                                Latitude:</label></div>
+                                        <div class="col-9"> <input type="text" id="startLatInput"
+                                                class="form-control  mb-2">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-6">
+                                    <div class="row justify-content-start ">
+                                        <div class="col-3 ml-2"><label for="startLngInput"
+                                                class="col-form-label mb-2">Start Longitude:</label> </div>
+                                        <div class="col-9"><input type="text" id="startLngInput"
+                                                class="form-control mb-2 ">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+
+                            <!-- //=================================     end   ================================= -->
+
+                            <div class="row justify-content-evenly ">
+
+                                <div class="col-6">
+                                    <div class="row justify-content-start ">
+                                        <div class="col-3 "> <label for="endLatInput" class="col-form-label mb-2">End Latitude:</label></div>
+                                        <div class="col-9"> <input type="text" id="endLatInput"
+                                                class="form-control  mb-2">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-6">
+                                    <div class="row justify-content-start ">
+                                        <div class="col-3 ml-2"><label for="endLngInput" class="col-form-label mb-2">End Longitude:</label> </div>
+                                        <div class="col-9"><input type="text" id="endLngInput"
+                                                class="form-control mb-2 ">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+
+
+                            <!-- //=================================     distance and bearing   ================================= -->
+                            <div class="row justify-content-evenly ">
+
+                                <div class="col-6">
+                                    <div class="row justify-content-start ">
+                                        <div class="col-3 "> <label for="distanceInput"
+                                                class="col-form-label mb-2">Distance:</label></div>
+                                        <div class="col-9"> <input type="text" id="distanceInput"
+                                                class="form-control  mb-2">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-6">
+                                    <div class="row justify-content-start ">
+                                        <div class="col-3 ml-2"><label for="bearingInput"
+                                                class="col-form-label mb-2">bearing:</label> </div>
+                                        <div class="col-9"><input type="text" id="bearingInput" onchange="changeBearing(this)"
+                                                class="form-control mb-2 ">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    </div>
+
+
+</body>
+
+
+
+
+<script>
+    var map = L.map('map').setView([28.7041 , 77.1025], 19);
+    var tiles = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+        maxZoom: 22,
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+    }).addTo(map);
+
+    // // var sidePanel = document.getElementById('sidePanel');
+    // function showProductDetails() {
+    //     var detailsElement = document.getElementById("product-details");
+    //     detailsElement.style.display = "none"; // Show the product details
+    // }
+
+
+    // function toggleButtonColor() {
+    //     var button = document.getElementById("timelineButton");
+    //     button.classList.toggle("clicked");
+    // }
+
+    // var latitudeElement = document.getElementById('latitude');
+    // var longitudeElement = document.getElementById('longitude');
+
+    // map.on('mousemove', function (e) {
+    //     var lat = e.latlng.lat.toFixed(6);
+    //     var lng = e.latlng.lng.toFixed(6);
+
+    //     latitudeElement.textContent = lat;
+    //     longitudeElement.textContent = lng;
+    // });
+
+    // var displayText = document.getElementById('product-details');
+
+    // function onMapClick(e) {
+
+    //     if (displayText.style.display === 'none') {
+    //         displayText.style.display = 'block';
+    //     } else {
+    //         displayText.style.display = 'none';
+    //     }
+    //     // var coordinates = [];
+
+    //     // // Add the clicked point coordinates to the polyline
+    //     // coordinates.push(e.latlng);
+
+    //     // // Store the polyline coordinates in the polylines array
+    //     // polylines.push(coordinates);
+
+    //     // // Redraw all the polylines
+    //     // redrawPolylines();
+    // }
+
+    // map.on('click', onMapClick);
+
+
+
+</script>
+
+<script src="./script.js"></script>
+
+
+
+
+</html>
