@@ -28,7 +28,7 @@ function onMapClick(e) {
       startMarker = e.latlng;
 
 
-    
+
       console.log(e.latlng);
 
     } else if (!endMarker) {
@@ -50,11 +50,11 @@ function onMapClick(e) {
       // });
 
       lineGroup.on('click', function (event) {
-console.log("-------"+ displayText.style.display)
+        console.log("-------" + displayText.style.display)
 
-if (displayText) {
-  displayText.style.display = "block";
-}
+        if (displayText) {
+          displayText.style.display = "block";
+        }
         clickedPolyline = event.layer;
         var foundPolyline = null;
 
@@ -107,7 +107,7 @@ function disableDrawing() {
   mapContainer.style.cursor = 'default';
 
 }
- 
+
 
 
 map.on('click', onMapClick);
@@ -118,14 +118,14 @@ var drawLineButton = document.getElementById('drawLineButton');
 drawLineButton.addEventListener('click', function () {
   console.log("drawLineButton");
   if (drawingEnabled == false) {
-    drawingEnabled = true; 
-     mapContainer.style.cursor = 'crosshair';
-    console.log("isDrawing open"); 
-  } else {  
+    drawingEnabled = true;
+    mapContainer.style.cursor = 'crosshair';
+    console.log("isDrawing open");
+  } else {
     drawingEnabled = false;
     mapContainer.style.cursor = 'default';
     console.log("isDrawing closed");
-  } 
+  }
 });
 
 
@@ -182,7 +182,7 @@ function deleteCurrentLine() {
 
 // =======================   delete all  button =======================    
 
-var deleteButton = document.getElementById('deleteButton'); 
+var deleteButton = document.getElementById('deleteButton');
 deleteButton.addEventListener('click', deleteButtonopt);
 function deleteButtonopt() {
   array_of_lines = [];
@@ -214,14 +214,14 @@ function deleteButtonopt() {
 //         printButton.addEventListener('click',manualPrint);
 
 
-       
+
 
 // 		function manualPrint () {
 // 			printer.printMap('CurrentSize', 'MyManualPrint')
 // 		}
 
 
-L.control.browserPrint({position: 'topleft', title: 'Print ...'}).addTo(map);
+L.control.browserPrint({ position: 'topleft', title: 'Print ...' }).addTo(map);
 
 
 // ============================= redrawLines =============================
@@ -242,24 +242,24 @@ function redrawLines() {
     var polyline = array_of_lines[i];
     // var line = L.polyline(polyline.getLatLngs()).addTo(lineGroup);
 
-    var coordinates = polyline.getLatLngs(); 
+    var coordinates = polyline.getLatLngs();
 
     var start = [coordinates[0].lat, coordinates[0].lng];
-  var end = [coordinates[1].lat, coordinates[1].lng];
-    drawPolyline(start, end , designLineGroup);
+    var end = [coordinates[1].lat, coordinates[1].lng];
+    drawPolyline(start, end, designLineGroup);
   }
- 
+
 
   // lineGroup.on('click', function (event) {
   //   console.log("-------"+ displayText.style.display)
-    
+
   //   if (displayText) {
   //     displayText.style.display = "block";
   //   }
   //           clickedPolyline = event.layer;
 
   //           var foundPolyline = null;
-    
+
   //           // Find the clicked polyline from the array_of_lines array
   //           for (var i = 0; i < array_of_lines.length; i++) {
   //             if (array_of_lines[i] === clickedPolyline) {
@@ -268,28 +268,28 @@ function redrawLines() {
   //             }
   //           }
   //           console.log("found line in clic"+foundPolyline)
-    
+
   //           // Perform actions with the foundPolyline
   //           if (foundPolyline) {
   //             var coordinates = foundPolyline.getLatLngs();
   //             var distance = coordinates[0].distanceTo(coordinates[1]).toFixed(2); console.log(distance);
   //             var bearing = calculateBearing(coordinates[0], coordinates[1]).toFixed(2);
-    
+
   //             startLatInput.value = coordinates[0].lat;
   //             startLngInput.value = coordinates[0].lat;
   //             endLatInput.value = coordinates[1].lat;
   //             endLngInput.value = coordinates[1].lat;
   //             distanceInput.value = distance;
   //             bearingInput.value = bearing;
-    
-    
-    
+
+
+
   //             // document.getElementById("")
   //             // alert("Line Specifications:\n\nDistance: " + distance + " meters\nBearing: " + bearing + " degrees");
   //           }
   //         });
 
-  console.log("  ------- xxxxxxx--------------- ") 
+  console.log("  ------- xxxxxxx--------------- ")
 
 }
 
@@ -334,6 +334,98 @@ function changeBearing(input) {
 
 }
 
+
+// =========================== change latitude start =========================== 28.703283
+function change_latitude_start(change_lat) {
+  console.log("in change latitude start")
+  var change_lat = change_lat.value;
+
+  for (var i = 0; i < array_of_lines.length; i++) {
+    if (array_of_lines[i] === clickedPolyline) {
+      console.log(array_of_lines[i] + "++++++++++change_lat++++++++")
+      var latLngs = array_of_lines[i].getLatLngs();
+      latLngs[0].lat = change_lat;
+      array_of_lines[i].setLatLngs(latLngs);
+  console.log(array_of_lines[i]);
+
+      break;
+    }
+  }
+  console.log("redrawLines");
+  redrawLines();
+  // printp();
+  console.log("**************************")
+
+}
+// =========================== change longitude start =========================== 28.703389, 77.102025
+function change_longitude_start(change_lng) {
+  console.log("in change longitude start")
+  var change_lng = change_lng.value;
+
+
+  for (var i = 0; i < array_of_lines.length; i++) {
+    if (array_of_lines[i] === clickedPolyline) {
+      console.log(array_of_lines[i] + "++++++++++change_lat++++++++")
+      var latLngs = array_of_lines[i].getLatLngs();
+      latLngs[0].lng = change_lng;
+      array_of_lines[i].setLatLngs(latLngs);
+  console.log(array_of_lines[i]);
+
+      break;
+    }
+  }
+  console.log("redrawLines");
+  redrawLines();
+  // printp();
+  console.log("**************************")
+
+}
+
+
+
+// =========================== change latitude end =========================== 28.703283
+function change_latitude_end(change_lat) {
+  console.log("in change latitude end")
+  var change_lat = change_lat.value;
+
+  for (var i = 0; i < array_of_lines.length; i++) {
+    if (array_of_lines[i] === clickedPolyline) {
+      console.log(array_of_lines[i] + "++++++++++change_lat++++++++")
+      var latLngs = array_of_lines[i].getLatLngs();
+      latLngs[latLngs.length-1].lat = change_lat;
+      array_of_lines[i].setLatLngs(latLngs);
+  console.log(array_of_lines[i]);
+
+      break;
+    }
+  }
+  console.log("redrawLines");
+  redrawLines();
+  // printp();
+  console.log("**************************")
+
+}
+// =========================== change longitude end =========================== 28.703389, 77.102025
+function change_longitude_end(change_lng) {
+  console.log("in change longitude end")
+  var change_lng = change_lng.value; 
+  for (var i = 0; i < array_of_lines.length; i++) {
+    if (array_of_lines[i] === clickedPolyline) { 
+      console.log(array_of_lines[i] + "++++++++++change_lat++++++++")
+      var latLngs = array_of_lines[i].getLatLngs();
+ 
+      latLngs[latLngs.length-1].lng = change_lng; 
+      array_of_lines[i].setLatLngs(latLngs);
+  console.log(array_of_lines[i]);
+
+      break;
+    }
+  }
+  console.log("redrawLines");
+  redrawLines();
+  console.log("**************************")
+
+}
 
 function drawPolyline(start, end, layer) {
   // start : start point [lat, lng]

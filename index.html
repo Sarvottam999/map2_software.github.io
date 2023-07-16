@@ -96,7 +96,7 @@
                                                 class="col-form-label mb-2">Start
                                                 Latitude:</label></div>
                                         <div class="col-9"> <input type="text" id="startLatInput"
-                                                class="form-control  mb-2">
+                                                class="form-control  mb-2" onchange="change_latitude_start(this)">
                                         </div>
                                     </div>
                                 </div>
@@ -106,7 +106,7 @@
                                         <div class="col-3 ml-2"><label for="startLngInput"
                                                 class="col-form-label mb-2">Start Longitude:</label> </div>
                                         <div class="col-9"><input type="text" id="startLngInput"
-                                                class="form-control mb-2 ">
+                                                class="form-control mb-2 "  onchange="change_longitude_start(this)">
                                         </div>
                                     </div>
                                 </div>
@@ -123,7 +123,7 @@
                                     <div class="row justify-content-start ">
                                         <div class="col-3 "> <label for="endLatInput" class="col-form-label mb-2">End Latitude:</label></div>
                                         <div class="col-9"> <input type="text" id="endLatInput"
-                                                class="form-control  mb-2">
+                                                class="form-control  mb-2" onchange="change_latitude_end(this)">
                                         </div>
                                     </div>
                                 </div>
@@ -132,7 +132,7 @@
                                     <div class="row justify-content-start ">
                                         <div class="col-3 ml-2"><label for="endLngInput" class="col-form-label mb-2">End Longitude:</label> </div>
                                         <div class="col-9"><input type="text" id="endLngInput"
-                                                class="form-control mb-2 ">
+                                                class="form-control mb-2 " onchange="change_longitude_end(this)">
                                         </div>
                                     </div>
                                 </div>
@@ -140,7 +140,6 @@
 
 
                             </div>
-
 
                             <!-- //=================================     distance and bearing   ================================= -->
                             <div class="row justify-content-evenly ">
