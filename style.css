@@ -1,21 +1,60 @@
-#map {
-    height: 700px;
+html, body{
+    height: 100%;
     width: 100%;
+    box-sizing: content-box;
+}
+
+#map {
+    height: 750px;
+    /* width: 100%;
+     */
+    width: 100%;
+
     /* margin: 15; */
 
 }
 
+.map-console{
+    /* display: flex;
+    justify-content: space-between; */
+    align-items: center;
+    background-color: rgb(156, 209, 255);
+    height: 800px;
+    padding: 10px;
+    /* width: 100%;
+     */
+    width: 100%;
+    /* margin: 20px; */
+    margin-bottom: 10px;
+    /* margin: 15; */
+
+}
+
+
+.panel{
+  
+    background-color: rgb(28, 53, 74);
+    
+    
+
+}
+.side-panel{
+    background-color: rgb(156, 209, 255);
+ 
+   
+}
+    
 #product-details {
-    display: none;
+    /* display: none; */
     /* Hide product details by default */
     margin-top: 10px;
     /* Add margin for spacing */
 }
 
-#sidePanel {
-    background-color: rgb(156, 209, 255);
+ 
+.common{
+    height: 100px;
 }
-
 
 /* ==============  style for buttons -================ */
 .addButton,

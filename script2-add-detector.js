@@ -7,12 +7,30 @@ var startMarker = null;
 var endMarker = null;
 
 var array_of_lines = [];    // array of lines   
-
 var lineGroup = L.featureGroup().addTo(map);
+
+var edge_detect_lineGroup = L.featureGroup().addTo(map);
 var designLineGroup = L.featureGroup().addTo(map);
 
 var drawingEnabled = false;
+//  ==============
+var selected_latitude = null
+var selected_longitude = null;
 
+var temp_latitude = null
+var temp_longitude = null;
+var customIcon = L.icon({
+  iconUrl: './icon25/square.png',
+  iconSize: [32, 32], // size of the icon
+  iconAnchor: [16, 16], // point of the icon which will correspond to marker's location
+  popupAnchor: [0, -16], // point from which the popup should open relative to the iconAnchor
+});
+var clickEnabled = true; // Flag to control the click behavior
+
+
+
+var marker = null;
+var polylineMain = null;
 
 var endLatInput = document.getElementById('endLatInput');
 var endLngInput = document.getElementById('endLngInput');
@@ -21,25 +39,36 @@ var bearingInput = document.getElementById('bearingInput');
 var mapContainer = document.getElementById('map');
 var displayText = document.getElementById('product-details');
 // console.log(displayText)
+
+
+map.on('click', onMapClick);
+
 function onMapClick(e) {
   if (drawingEnabled) {
     if (!startMarker) {
+      // console.log("inside startMarker adding---------------------------------------------------------")
       // startMarker = L.marker(e.latlng).addTo(map);
       startMarker = e.latlng;
 
 
 
-      console.log(e.latlng);
+      // console.log(e.latlng);
 
     } else if (!endMarker) {
+      // console.log("inside endmarker adding++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+
       // endMarker = L.marker(e.latlng).addTo(map);
       endMarker = e.latlng;
-      console.log(e.latlng);
+      // console.log(e.latlng);
 
       var line = L.polyline([startMarker, endMarker]).addTo(lineGroup);
       var start = [startMarker.lat, startMarker.lng];
       var end = [endMarker.lat, endMarker.lng];
       drawPolyline(start, end, designLineGroup)
+      startMarker = null;
+      endMarker = null;
+      edge_detect_lineGroup.clearLayers();
+
       // console.log(line);
       array_of_lines.push(line);
 
@@ -50,7 +79,9 @@ function onMapClick(e) {
       // });
 
       lineGroup.on('click', function (event) {
-        console.log("-------" + displayText.style.display)
+
+        clickEnabled = true;
+        // console.log("-------" + displayText.style.display)
 
         if (displayText) {
           displayText.style.display = "block";
@@ -69,7 +100,8 @@ function onMapClick(e) {
         // Perform actions with the foundPolyline
         if (foundPolyline) {
           var coordinates = foundPolyline.getLatLngs();
-          var distance = coordinates[0].distanceTo(coordinates[1]).toFixed(2); console.log(distance);
+          var distance = coordinates[0].distanceTo(coordinates[1]).toFixed(2); 
+          // console.log(distance);
           var bearing = calculateBearing(coordinates[0], coordinates[1]).toFixed(2);
 
           startLatInput.value = coordinates[0].lat;
@@ -80,6 +112,232 @@ function onMapClick(e) {
           bearingInput.value = bearing;
 
 
+          // =================  for edge detection =============================
+          foundPolyline.on('mousemove', function (event) {
+            if (clickEnabled) {
+
+
+
+            // if (clickEnabled) {
+
+            var cursorLatLng = event.latlng;
+            var startLatLng = foundPolyline.getLatLngs()[0];
+            var endLatLng = foundPolyline.getLatLngs()[foundPolyline.getLatLngs().length - 1];
+
+            // console.log("start " + startLatLng);
+            // console.log("end " + endLatLng);
+
+
+            var distanceToStart = cursorLatLng.distanceTo(startLatLng);
+            var distanceToEnd = cursorLatLng.distanceTo(endLatLng);
+
+
+            var tolerance = 10; // Adjust the tolerance as needed
+
+
+            // ------------------------------   one    -----------------------------
+            if (distanceToStart <= tolerance) {
+              console.log('Cursor is near the start point');
+
+              temp_latitude = startLatLng.lat;
+              temp_longitude = startLatLng.lng;
+
+              if (marker) {
+
+                if (drawingEnabled == false) {
+                  drawingEnabled = true;
+                  mapContainer.style.cursor = 'crosshair';
+                  // console.log("isDrawing open");
+                  toggleButtonColor()
+                }
+
+                edge_detect_lineGroup.removeLayer(marker);
+                marker = L.marker([temp_latitude, temp_longitude], { icon: customIcon })
+                marker.on('click', function (event) {
+                  // console.log("inside marker click")
+
+                  selected_latitude = temp_latitude;
+                  selected_longitude = temp_longitude;
+
+
+                  startMarker = L.latLng(selected_latitude, selected_longitude);
+
+                  console.log("setted lat lng")
+
+                  // if (polylineMain) {
+                  //   console.log("polylineMain true")
+                  //   polylineMain.remove();
+
+                  //   polylineMain = L.polyline([[selected_latitude, selected_longitude]], { color: 'blue' }).addTo(map);
+
+
+
+                  // } else {
+                  //   console.log("polylineMain false")
+
+                  //   polylineMain = L.polyline([[selected_latitude, selected_longitude]], { color: 'blue' }).addTo(map);
+
+                  // }
+
+                })
+                marker.addTo(edge_detect_lineGroup);
+
+              } else {
+                selected_latitude = temp_latitude;
+                selected_longitude = temp_longitude;
+
+                marker = L.marker([temp_latitude, temp_longitude], { icon: customIcon })
+                marker.on('click', function (event) {
+                  // console.log("inside marker click")
+
+                  selected_latitude = temp_latitude;
+                  selected_longitude = temp_longitude;
+
+
+                  startMarker = L.latLng(selected_latitude, selected_longitude);
+
+                  // detected_status.innerHTML = selected_latitude+' - '+selected_longitude;
+
+                  // console.log("setted lat lng")
+                  // if (polylineMain) {
+                  //   polylineMain.remove();
+
+                  //   polylineMain = L.polyline([[selected_latitude, selected_longitude]], { color: 'blue' }).addTo(map);
+
+
+
+                  // } else {
+                  //   polylineMain = L.polyline([[selected_latitude, selected_longitude]], { color: 'blue' }).addTo(map);
+
+                  // }
+
+
+                })
+                marker.addTo(edge_detect_lineGroup);
+
+
+              }
+              // detected_status.innerHTML = selected_latitude + ' - ' + selected_longitude;
+
+              // console.log(selected_latitude+"startLatLng------------------------+"+selected_longitude)
+              // if (selected_latitude) {
+              //   if (polylineMain) {
+              //     polylineMain.remove();
+
+              //     polylineMain = L.polyline([[selected_latitude, selected_longitude]], { color: 'blue' }).addTo(map);
+
+
+
+              //   } else {
+              //     polylineMain = L.polyline([[selected_latitude, selected_longitude]], { color: 'blue' }).addTo(map);
+
+              //   }
+              // }
+            }
+
+            //   console.log(polylineMain + "polylineMain*********************");
+
+
+            // Add your code here
+            // }
+            // ------------------------------   two    -----------------------------
+
+            if (distanceToEnd <= tolerance) {
+              // console.log('Cursor is near the end point');
+
+              temp_latitude = endLatLng.lat;
+              temp_longitude = endLatLng.lng;
+
+              if (marker) {
+
+                if (drawingEnabled == false) {
+                  drawingEnabled = true;
+                  mapContainer.style.cursor = 'crosshair';
+                  // console.log("isDrawing open");
+                  toggleButtonColor()
+                }
+
+
+                edge_detect_lineGroup.removeLayer(marker);
+                marker = L.marker([temp_latitude, temp_longitude], { icon: customIcon })
+                marker.on('click', function (event) {
+                  console.log("inside marker click")
+
+                  selected_latitude = temp_latitude;
+                  selected_longitude = temp_longitude;
+
+                  startMarker = L.latLng(selected_latitude, selected_longitude);
+
+                  // console.log("setted lat lng")
+
+                  // if (polylineMain) {
+                  //   console.log("polylineMain true")
+                  //   polylineMain.remove();
+
+                  //   polylineMain = L.polyline([[selected_latitude, selected_longitude]], { color: 'blue' }).addTo(map);
+
+
+
+                  // } else {
+                  //   console.log("polylineMain false")
+
+                  //   polylineMain = L.polyline([[selected_latitude, selected_longitude]], { color: 'blue' }).addTo(map);
+
+                  // }
+
+                })
+                marker.addTo(edge_detect_lineGroup);
+
+              } else {
+                selected_latitude = temp_latitude;
+                selected_longitude = temp_longitude;
+
+                marker = L.marker([temp_latitude, temp_longitude], { icon: customIcon })
+                marker.on('click', function (event) {
+                  // console.log("inside marker click")
+
+                  selected_latitude = temp_latitude;
+                  selected_longitude = temp_longitude;
+                  // detected_status.innerHTML = selected_latitude+' - '+selected_longitude;
+                  startMarker = L.latLng(selected_latitude, selected_longitude);
+
+                  // console.log("setted lat lng")
+                  // if (polylineMain) {
+                  //   polylineMain.remove();
+
+                  //   polylineMain = L.polyline([[selected_latitude, selected_longitude]], { color: 'blue' }).addTo(map);
+
+
+
+                  // } else {
+                  //   polylineMain = L.polyline([[selected_latitude, selected_longitude]], { color: 'blue' }).addTo(map);
+
+                  // }
+
+
+                })
+                marker.addTo(edge_detect_lineGroup);
+
+
+              }
+              // if (polylineMain) {
+              //   polylineMain.remove();
+
+              //   polylineMain = L.polyline([[temp_latitude, temp_longitude]], { color: 'blue' }).addTo(map);
+
+
+              // } else {
+              //   polylineMain = L.polyline([[temp_latitude, temp_longitude]], { color: 'blue' }).addTo(map);
+
+
+              // }
+
+              // Add your code here
+            }
+          }
+
+          });
+
 
           // document.getElementById("")
           // alert("Line Specifications:\n\nDistance: " + distance + " meters\nBearing: " + bearing + " degrees");
@@ -87,6 +345,7 @@ function onMapClick(e) {
       });
       toggleButtonColor()
       disableDrawing();
+      clickEnabled = false
     } else {
       // startMarker.remove();
       // endMarker.remove();
@@ -110,21 +369,20 @@ function disableDrawing() {
 
 
 
-map.on('click', onMapClick);
 // ========================   timeline button operatio =======================
 var drawLineButton = document.getElementById('drawLineButton');
 
 
 drawLineButton.addEventListener('click', function () {
-  console.log("drawLineButton");
+  // console.log("drawLineButton");
   if (drawingEnabled == false) {
     drawingEnabled = true;
     mapContainer.style.cursor = 'crosshair';
-    console.log("isDrawing open");
+    // console.log("isDrawing open");
   } else {
     drawingEnabled = false;
     mapContainer.style.cursor = 'default';
-    console.log("isDrawing closed");
+    // console.log("isDrawing closed");
   }
 });
 
@@ -232,7 +490,7 @@ function redrawLines() {
   // var start = [startMarker.lat, startMarker.lng];
   // var end = [endMarker.lat, endMarker.lng];
   // drawPolyline(start, end, lineGroup)
-  console.log("in re  drawlines ---------------------- ")
+  // console.log("in re  drawlines ---------------------- ")
   // console.log(array_of_lines[i])
   // lineGroup.clearLayers();
   designLineGroup.clearLayers();
@@ -289,7 +547,7 @@ function redrawLines() {
   //           }
   //         });
 
-  console.log("  ------- xxxxxxx--------------- ")
+  // console.log("  ------- xxxxxxx--------------- ")
 
 }
 
@@ -311,7 +569,7 @@ function changeBearing(input) {
       // foundPolyline = a
       // array_of_lines[i] = newEndPoint;
       // Get the array of LatLng points from the polyline
-      console.log(array_of_lines[i] + "++++++++++++++++++")
+      // console.log(array_of_lines[i] + "++++++++++++++++++")
 
       var latLngs = array_of_lines[i].getLatLngs();
 
@@ -330,7 +588,7 @@ function changeBearing(input) {
   // console.log(newEndPoint);
   redrawLines();
   // printp();
-  console.log("**************************")
+  // console.log("**************************")
 
 }
 
@@ -342,19 +600,19 @@ function change_latitude_start(change_lat) {
 
   for (var i = 0; i < array_of_lines.length; i++) {
     if (array_of_lines[i] === clickedPolyline) {
-      console.log(array_of_lines[i] + "++++++++++change_lat++++++++")
+      // console.log(array_of_lines[i] + "++++++++++change_lat++++++++")
       var latLngs = array_of_lines[i].getLatLngs();
       latLngs[0].lat = change_lat;
       array_of_lines[i].setLatLngs(latLngs);
-  console.log(array_of_lines[i]);
+      // console.log(array_of_lines[i]);
 
       break;
     }
   }
-  console.log("redrawLines");
+  // console.log("redrawLines");
   redrawLines();
   // printp();
-  console.log("**************************")
+  // console.log("**************************")
 
 }
 // =========================== change longitude start =========================== 28.703389, 77.102025
@@ -365,16 +623,16 @@ function change_longitude_start(change_lng) {
 
   for (var i = 0; i < array_of_lines.length; i++) {
     if (array_of_lines[i] === clickedPolyline) {
-      console.log(array_of_lines[i] + "++++++++++change_lat++++++++")
+      // console.log(array_of_lines[i] + "++++++++++change_lat++++++++")
       var latLngs = array_of_lines[i].getLatLngs();
       latLngs[0].lng = change_lng;
       array_of_lines[i].setLatLngs(latLngs);
-  console.log(array_of_lines[i]);
+      // console.log(array_of_lines[i]);
 
       break;
     }
   }
-  console.log("redrawLines");
+  // console.log("redrawLines");
   redrawLines();
   // printp();
   console.log("**************************")
@@ -392,9 +650,9 @@ function change_latitude_end(change_lat) {
     if (array_of_lines[i] === clickedPolyline) {
       console.log(array_of_lines[i] + "++++++++++change_lat++++++++")
       var latLngs = array_of_lines[i].getLatLngs();
-      latLngs[latLngs.length-1].lat = change_lat;
+      latLngs[latLngs.length - 1].lat = change_lat;
       array_of_lines[i].setLatLngs(latLngs);
-  console.log(array_of_lines[i]);
+      console.log(array_of_lines[i]);
 
       break;
     }
@@ -408,15 +666,15 @@ function change_latitude_end(change_lat) {
 // =========================== change longitude end =========================== 28.703389, 77.102025
 function change_longitude_end(change_lng) {
   console.log("in change longitude end")
-  var change_lng = change_lng.value; 
+  var change_lng = change_lng.value;
   for (var i = 0; i < array_of_lines.length; i++) {
-    if (array_of_lines[i] === clickedPolyline) { 
+    if (array_of_lines[i] === clickedPolyline) {
       console.log(array_of_lines[i] + "++++++++++change_lat++++++++")
       var latLngs = array_of_lines[i].getLatLngs();
- 
-      latLngs[latLngs.length-1].lng = change_lng; 
+
+      latLngs[latLngs.length - 1].lng = change_lng;
       array_of_lines[i].setLatLngs(latLngs);
-  console.log(array_of_lines[i]);
+      console.log(array_of_lines[i]);
 
       break;
     }
@@ -735,6 +993,8 @@ function drawLine(start, end, marker_lines, layer, customIcon) {
     }
   }
 }
+
+// we are hear help  
 
 
 var Myicons = [
